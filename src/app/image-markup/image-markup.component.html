@@ -1,0 +1,66 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <div class="container-fluid">
+        <table class="table table-hover table-dark">
+          <caption>{{color}}</caption>
+          <thead>
+          <tr>
+            <th colspan="4">Tags</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="clickable-row active">
+            <td>person</td>
+            <td><input (change)="getColor($event.target.value)" type="color" class="color btn btn-dark btn-sm"></td>
+            <td><button type="button" class="btn btn-dark btn-sm">
+              <i class="icon ion-md-trash"></i></button></td>
+            <td><button type="button" class="btn btn-dark btn-sm">
+              <i class="icon ion-md-settings"></i></button></td>
+          </tr>
+          <tr class="clickable-row">
+            <td>another</td>
+            <td><input type="color" class="color btn btn-dark btn-sm"></td>
+            <td><button type="button" class="btn btn-dark btn-sm">
+              <i class="icon ion-md-trash"></i></button></td>
+            <td><button type="button" class="btn btn-dark btn-sm">
+              <i class="icon ion-md-settings"></i></button></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-6">
+      <!-- workspace -->
+      <div class="container-fluid position-relative overflow-auto p-0" (mousemove)="onEvent($event)" (mousedown)="onClickDown($event)"
+           (mouseleave)="onClickUp()" (mouseup)="onClickUp()" (mouseenter)="onEnter()" (scroll)="onScroll($event)"
+           [ngStyle]="{'max-height': mHeightForRefresh}" #canvas>
+          <img src="/assets/images/test_for_model2.jpg" class="img-fluid" alt="dataset"
+               [ngStyle]="{'transform':'scale('+scale+')','transform-origin': '0px 0px'}" (load)="initImg()" #img>
+        <div class="vert position-absolute"></div>
+        <div class="hor position-absolute"></div>
+        <app-resize-rect [rect]="tempRect" [config]="tempConf"></app-resize-rect>
+      </div>
+      <!-- menu -->
+      <div class="container-fluid">
+        <br>
+        <!-- <ion-icon name="arrow-round-forward"></ion-icon> -->
+        <button type="button" class="btn btn-dark waves-effect waves-light"><i class="icon ion-md-arrow-round-back"></i> prev</button>
+        <button type="button" class="btn btn-dark">next <i class="icon ion-md-arrow-round-forward"></i></button>
+        <button type="button" class="btn btn-dark" (click)="zoomIn()"><i class="icon ion-md-search"></i>
+          <sup><i class="icon ion-md-add"></i></sup></button>
+        <button type="button" class="btn btn-dark" (click)="zoomOut()"><i class="icon ion-md-search"></i>
+          <sup><i class="icon ion-md-remove"></i></sup></button>
+        <button type="button" class="btn btn-dark"><i class="icon ion-md-save"></i></button>
+        <button type="button" class="btn btn-dark"><i class="icon ion-md-trash"></i></button>
+        <button type="button" class="btn btn-dark" (click)="outInfo()"><i class="icon ion-md-information-circle-outline"></i></button>
+      </div>
+    </div>
+    <div class="col">
+      <div class="container-fluid">
+        <p>x:{{clX}} y:{{clY}} btn:{{mBtn}} isOut:{{isOut}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+

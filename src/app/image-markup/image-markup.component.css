@@ -1,0 +1,17 @@
+input[type="color"].color{
+  width: 80%!important;
+  height: calc(1.5em + .75rem + 2px)!important;
+}
+
+.vert{
+  top: 0px;
+  border-left: 2px dashed green;
+  height: 100%;
+}
+.hor{
+  top: 0px;
+  border-top: 2px dashed green;
+  width: 100%;
+}
+
+
