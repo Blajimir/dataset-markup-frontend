@@ -1,3 +1,3 @@
 <div class="border position-absolute" (click)="getSomeInfo()" [style]="getStyleMain()"></div>
-<div class="border position-absolute" #ulcorner></div>
-<div class="border position-absolute" #brcorner></div>
+<div class="border position-absolute" (mousedown)="beginResize($event)" id="ulcorner" #ulcorner></div>
+<div class="border position-absolute" id="brcorner" #brcorner></div>

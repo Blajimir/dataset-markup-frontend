@@ -63,6 +63,10 @@ export class ResizeRectComponent implements OnInit {
   }
 
   beginResize(event: MouseEvent) {
+    console.log(event.target);
+    console.log(event.currentTarget);
+    console.log(event.relatedTarget);
+    console.log(event);
   }
 
   endResize(event: MouseEvent) {

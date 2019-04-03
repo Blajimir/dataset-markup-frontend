@@ -1,6 +1,18 @@
 import {AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {BBox, BBoxConfig} from '../resize-rect/resize-rect.component';
 
+enum WorkState {
+  create = 'create',
+  select = 'select',
+  move = 'move',
+  resize = 'resize'
+}
+
+interface AimProperties {
+  aimVisible: boolean;
+  aimEnable: boolean;
+}
+
 @Component({
   selector: 'app-image-markup',
   templateUrl: './image-markup.component.html',
@@ -13,22 +25,23 @@ export class ImageMarkupComponent implements OnInit, AfterViewChecked {
   clY = 0;
   scale = 1.0;
   isZoomRect = false;
-  mBtn = false;
+  isAction = false;
   isOut = false;
   mHeightForRefresh = 'none';
   @ViewChild('canvas') canvas: ElementRef;
   @ViewChild('img') img: ElementRef;
+  @ViewChild('aimhor') aimhor: ElementRef;
+  @ViewChild('aimvert') aimvert: ElementRef;
 
+  private workState: WorkState;
   lastRect: BBox;
   tempRect: BBox;
   initImgRect: BBox;
   tempConf: BBoxConfig;
 
-  constructor(private cdRef: ChangeDetectorRef) {
-  }
+  aimProps: AimProperties = {aimEnable: false, aimVisible: false};
 
-  onEnter() {
-    this.isOut = false;
+  constructor(private cdRef: ChangeDetectorRef) {
   }
 
   getInfo(elem: ElementRef | BBox, name?: string): string {
@@ -74,6 +87,17 @@ export class ImageMarkupComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  getState() {
+
+  }
+
+  zoomAim() {
+    if (this.aimProps.aimEnable) {
+      this.aimvert.nativeElement.style.height = (100 * this.scale) + '%';
+      this.aimhor.nativeElement.style.width = (100 * this.scale) + '%';
+    }
+  }
+
   zoomRect() {
     const realScale = this.getRealScale();
     this.tempRect.sx = realScale.sx;
@@ -90,14 +114,17 @@ export class ImageMarkupComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  onClickUp() {
-    if (Math.abs(this.tempRect.w) < 3 || Math.abs(this.tempRect.h) < 3) {
-      this.tempRect = this.lastRect;
+  setAimVisible(visible: boolean) {
+    if (this.aimProps.aimEnable) {
+      this.aimProps.aimVisible = visible;
     }
-    this.mBtn = false;
   }
 
   onClickDown(event: MouseEvent) {
+    // TODO: необходимо релизовать обработку выбора rect'ов и обработку кликов по рабочим div'ам
+    const elem = event.target as HTMLElement;
+    console.log(`target: ${elem}  id: ${elem.id}`);
+
     this.lastRect = this.tempRect;
     this.clX = event.x;
     this.clY = event.y;
@@ -105,15 +132,15 @@ export class ImageMarkupComponent implements OnInit, AfterViewChecked {
     const realX = (event.x - Math.floor(Number(rect.x))) + this.canvas.nativeElement.scrollLeft;
     const realY = (event.y - Math.floor(Number(rect.y))) + this.canvas.nativeElement.scrollTop;
     this.tempRect = {x: realX / this.tempRect.sx, y: realY / this.tempRect.sy, w: 0, h: 0, sx: this.tempRect.sx, sy: this.tempRect.sy};
-    this.mBtn = true;
+    this.isAction = true;
     return false;
   }
 
   onEvent(event: MouseEvent) {
-    if (this.mBtn) {
+    const rect = this.canvas.nativeElement.getBoundingClientRect();
+    if (this.isAction) {
       this.clX = event.x;
       this.clY = event.y;
-      const rect = this.canvas.nativeElement.getBoundingClientRect();
       const realX = (event.x - Math.floor(Number(rect.x)) + this.canvas.nativeElement.scrollLeft) / this.tempRect.sx;
       const realY = (event.y - Math.floor(Number(rect.y)) + this.canvas.nativeElement.scrollTop) / this.tempRect.sy;
       const w = realX - this.tempRect.x;
@@ -121,6 +148,29 @@ export class ImageMarkupComponent implements OnInit, AfterViewChecked {
       this.tempRect.w = w >= 0 ? w : 0;
       this.tempRect.h = h >= 0 ? h : 0;
     }
+    if (this.aimProps.aimEnable) {
+      this.aimvert.nativeElement.style.left = ((event.x - Math.floor(Number(rect.x)) + this.canvas.nativeElement.scrollLeft)) + 'px';
+      this.aimhor.nativeElement.style.top = ((event.y - Math.floor(Number(rect.y)) + this.canvas.nativeElement.scrollTop)) + 'px';
+      this.zoomAim();
+    }
+  }
+
+  onClickUp() {
+    if (Math.abs(this.tempRect.w) < 3 || Math.abs(this.tempRect.h) < 3) {
+      this.tempRect = this.lastRect;
+    }
+    this.isAction = false;
+  }
+
+  onEnter() {
+    this.isOut = false;
+    this.setAimVisible(true);
+    this.zoomAim();
+  }
+
+  onOut() {
+    this.setAimVisible(false);
+    this.onClickUp();
   }
 
   getColor(value: string) {
@@ -145,6 +195,7 @@ export class ImageMarkupComponent implements OnInit, AfterViewChecked {
   ngOnInit() {
     this.tempRect = {x: 500, y: 250, w: 50, h: 50, sx: this.scale, sy: this.scale};
     this.tempConf = {color: '#00ff00', widthLine: 2};
+    this.workState = WorkState.create;
   }
 
   ngAfterViewChecked(): void {

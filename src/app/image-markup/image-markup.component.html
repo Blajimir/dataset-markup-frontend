@@ -33,12 +33,12 @@
     <div class="col-6">
       <!-- workspace -->
       <div class="container-fluid position-relative overflow-auto p-0" (mousemove)="onEvent($event)" (mousedown)="onClickDown($event)"
-           (mouseleave)="onClickUp()" (mouseup)="onClickUp()" (mouseenter)="onEnter()" (scroll)="onScroll($event)"
+           (mouseleave)="onOut()" (mouseup)="onClickUp()" (mouseenter)="onEnter()" (scroll)="onScroll($event)"
            [ngStyle]="{'max-height': mHeightForRefresh}" #canvas>
           <img src="/assets/images/test_for_model2.jpg" class="img-fluid" alt="dataset"
                [ngStyle]="{'transform':'scale('+scale+')','transform-origin': '0px 0px'}" (load)="initImg()" #img>
-        <div class="vert position-absolute"></div>
-        <div class="hor position-absolute"></div>
+        <div class="vert position-absolute" #aimvert *ngIf="aimProps.aimVisible && aimProps.aimEnable"></div>
+        <div class="hor position-absolute" #aimhor *ngIf="aimProps.aimVisible && aimProps.aimEnable"></div>
         <app-resize-rect [rect]="tempRect" [config]="tempConf"></app-resize-rect>
       </div>
       <!-- menu -->
@@ -54,11 +54,13 @@
         <button type="button" class="btn btn-dark"><i class="icon ion-md-save"></i></button>
         <button type="button" class="btn btn-dark"><i class="icon ion-md-trash"></i></button>
         <button type="button" class="btn btn-dark" (click)="outInfo()"><i class="icon ion-md-information-circle-outline"></i></button>
+        <button type="button" title="aim" class="btn btn-dark" (click)="aimProps.aimEnable = !aimProps.aimEnable">
+          <i class="icon ion-md-contract"></i></button>
       </div>
     </div>
     <div class="col">
       <div class="container-fluid">
-        <p>x:{{clX}} y:{{clY}} btn:{{mBtn}} isOut:{{isOut}}</p>
+        <p>x:{{clX}} y:{{clY}} btn:{{isAction}} isOut:{{isOut}}</p>
       </div>
     </div>
   </div>

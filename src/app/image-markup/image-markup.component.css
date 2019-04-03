@@ -5,12 +5,14 @@ input[type="color"].color{
 
 .vert{
   top: 0px;
-  border-left: 2px dashed green;
+  pointer-events: none;
+  border-left: 1px dashed #b5b5b5;
   height: 100%;
 }
 .hor{
   top: 0px;
-  border-top: 2px dashed green;
+  pointer-events: none;
+  border-top: 1px dashed #b5b5b5;
   width: 100%;
 }
 
